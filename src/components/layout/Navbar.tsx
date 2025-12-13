@@ -3,14 +3,15 @@
 import { AppBar, Toolbar, Typography, IconButton } from '@mui/material';
 import { Menu as MenuIcon, Brightness4, Brightness7 } from '@mui/icons-material';
 import PackageIcon from '@mui/icons-material/Inventory2';
+import { useThemeMode } from '@/lib/providers';
 
 interface NavbarProps {
   onMenuClick: () => void;
-  darkMode: boolean;
-  onToggleDarkMode: () => void;
 }
 
-export default function Navbar({ onMenuClick, darkMode, onToggleDarkMode }: NavbarProps) {
+export default function Navbar({ onMenuClick }: NavbarProps) {
+  const { mode, toggleMode } = useThemeMode();
+
   return (
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <Toolbar>
@@ -29,8 +30,8 @@ export default function Navbar({ onMenuClick, darkMode, onToggleDarkMode }: Navb
           Inventory Dashboard
         </Typography>
 
-        <IconButton color="inherit" onClick={onToggleDarkMode}>
-          {darkMode ? <Brightness7 /> : <Brightness4 />}
+        <IconButton color="inherit" onClick={toggleMode}>
+          {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
         </IconButton>
       </Toolbar>
     </AppBar>

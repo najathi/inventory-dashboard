@@ -12,8 +12,6 @@ import {
   Box,
   Paper,
   Typography,
-  Toolbar,
-  Container,
   Button,
   Grid,
   Chip,
@@ -21,8 +19,7 @@ import {
 } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import Image from 'next/image';
-import Navbar from '@/components/layout/Navbar';
-import Sidebar from '@/components/layout/Sidebar';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 import ProductForm from '@/components/products/ProductForm';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import toast from 'react-hot-toast';
@@ -32,8 +29,6 @@ export default function ProductDetailPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
   const [editMode, setEditMode] = useState(false);
 
   const product = useAppSelector((state) => state.products.selectedProduct);
@@ -81,131 +76,111 @@ export default function ProductDetailPage() {
 
   if (loading || !product) {
     return (
-      <Box sx={{ display: 'flex' }}>
-        <Navbar
-          onMenuClick={() => setMobileOpen(!mobileOpen)}
-          darkMode={darkMode}
-          onToggleDarkMode={() => setDarkMode(!darkMode)}
-        />
-        <Sidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          <Toolbar />
-          <LoadingSpinner />
-        </Box>
-      </Box>
+      <DashboardLayout>
+        <LoadingSpinner />
+      </DashboardLayout>
     );
   }
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <Navbar
-        onMenuClick={() => setMobileOpen(!mobileOpen)}
-        darkMode={darkMode}
-        onToggleDarkMode={() => setDarkMode(!darkMode)}
-      />
-      <Sidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
-      <Box component="main" sx={{ flexGrow: 1, p: 3, width: '100%' }}>
-        <Toolbar />
-        <Container maxWidth="xl">
-          <Button
-            startIcon={<ArrowBack />}
-            onClick={() => router.push('/products')}
-            sx={{ mb: 3 }}
-          >
-            Back to Products
-          </Button>
+    <DashboardLayout>
+      <Button
+        startIcon={<ArrowBack />}
+        onClick={() => router.push('/products')}
+        sx={{ mb: 3 }}
+      >
+        Back to Products
+      </Button>
 
-          <Paper sx={{ p: 4 }}>
-            {editMode ? (
-              <>
-                <Typography variant="h4" gutterBottom>
-                  Edit Product
-                </Typography>
-                <ProductForm
-                  product={product}
-                  onSubmit={handleUpdate}
-                  onCancel={() => setEditMode(false)}
+      <Paper sx={{ p: 4 }}>
+        {editMode ? (
+          <>
+            <Typography variant="h4" gutterBottom>
+              Edit Product
+            </Typography>
+            <ProductForm
+              product={product}
+              onSubmit={handleUpdate}
+              onCancel={() => setEditMode(false)}
+            />
+          </>
+        ) : (
+          <Grid container spacing={4}>
+            <Grid size={{ xs: 12, md: 5 }}>
+              <Box
+                sx={{
+                  position: 'relative',
+                  width: '100%',
+                  paddingTop: '100%',
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                }}
+              >
+                <Image
+                  src={product.image || 'https://via.placeholder.com/400'}
+                  alt={product.name}
+                  fill
+                  style={{ objectFit: 'cover' }}
                 />
-              </>
-            ) : (
-              <Grid container spacing={4}>
-                <Grid size={{ xs: 12, md: 5 }}>
-                  <Box
-                    sx={{
-                      position: 'relative',
-                      width: '100%',
-                      paddingTop: '100%',
-                      borderRadius: 2,
-                      overflow: 'hidden',
-                    }}
-                  >
-                    <Image
-                      src={product.image || 'https://via.placeholder.com/400'}
-                      alt={product.name}
-                      fill
-                      style={{ objectFit: 'cover' }}
-                    />
-                  </Box>
-                </Grid>
+              </Box>
+            </Grid>
 
-                <Grid size={{ xs: 12, md: 7 }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="start" mb={2}>
-                    <Typography variant="h3" gutterBottom>
-                      {product.name}
-                    </Typography>
-                    <Chip
-                      label={product.active ? 'Active' : 'Inactive'}
-                      color={product.active ? 'success' : 'default'}
-                    />
-                  </Box>
+            <Grid size={{ xs: 12, md: 7 }}>
+              <Box display="flex" justifyContent="space-between" alignItems="start" mb={2}>
+                <Typography variant="h3" gutterBottom>
+                  {product.name}
+                </Typography>
+                <Chip
+                  label={product.active ? 'Active' : 'Inactive'}
+                  color={product.active ? 'success' : 'default'}
+                />
+              </Box>
 
-                  <Box display="flex" alignItems="center" mb={3}>
-                    <Rating value={product.rating} readOnly precision={0.1} />
-                    <Typography variant="body1" ml={1} color="text.secondary">
-                      {product.rating.toFixed(1)} / 5.0
-                    </Typography>
-                  </Box>
+              <Box display="flex" alignItems="center" mb={3}>
+                <Rating value={product.rating} readOnly precision={0.1} />
+                <Typography variant="body1" ml={1} color="text.secondary">
+                  {product.rating.toFixed(1)} / 5.0
+                </Typography>
+              </Box>
 
-                  <Typography variant="h4" color="primary" gutterBottom>
-                    ${product.price.toFixed(2)}
-                  </Typography>
+              <Typography variant="h4" color="primary" gutterBottom>
+                ${product.price.toFixed(2)}
+              </Typography>
 
-                  <Box mb={3}>
-                    <Typography variant="body1" color="text.secondary" gutterBottom>
-                      Category
-                    </Typography>
-                    <Chip label={product.category} />
-                  </Box>
+              <Box mb={3}>
+                <Typography variant="body1" color="text.secondary" gutterBottom>
+                  Category
+                </Typography>
+                <Chip label={product.category} />
+              </Box>
 
-                  <Box mb={3}>
-                    <Typography variant="body1" color="text.secondary" gutterBottom>
-                      Stock Quantity
-                    </Typography>
-                    <Typography variant="h6">{product.stock} units</Typography>
-                  </Box>
+              <Box mb={3}>
+                <Typography variant="body1" color="text.secondary" gutterBottom>
+                  Stock Quantity
+                </Typography>
+                <Typography variant="h6">{product.stock} units</Typography>
+              </Box>
 
-                  <Box mb={4}>
-                    <Typography variant="body1" color="text.secondary" gutterBottom>
-                      Description
-                    </Typography>
-                    <Typography variant="body1">
-                      {product.description || 'No description available'}
-                    </Typography>
-                  </Box>
+              <Box mb={4}>
+                <Typography variant="body1" color="text.secondary" gutterBottom>
+                  Description
+                </Typography>
+                <Typography variant="body1">
+                  {product.description || 'No description available'}
+                </Typography>
+              </Box>
 
-                  <Button
-                    variant="contained"
-                    size="large"
-                    onClick={() => setEditMode(true)}
-                  >
-                    Edit Product
-                  </Button>
-                </Grid>
-              </Grid>
-            )}
-          </Paper>
-        </Container>
-      </Box>
-    </Box>
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => setEditMode(true)}
+              >
+                Edit Product
+              </Button>
+            </Grid>
+          </Grid>
+        )}
+      </Paper>
+    </DashboardLayout>
   );
 }
