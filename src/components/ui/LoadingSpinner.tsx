@@ -1,0 +1,16 @@
+'use client';
+
+import { Box, CircularProgress } from '@mui/material';
+
+export default function LoadingSpinner() {
+  return (
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="400px"
+    >
+      <CircularProgress />
+    </Box>
+  );
+}
