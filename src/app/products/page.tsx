@@ -42,6 +42,13 @@ export default function ProductsPage() {
     dispatch(setFilters(newFilters));
   };
 
+  // Keep current page within bounds when filters or total pages change
+  useEffect(() => {
+    if (totalPages > 0 && currentPage > totalPages) {
+      dispatch(setPage(totalPages));
+    }
+  }, [currentPage, totalPages, dispatch]);
+
   const handlePageChange = (_: React.ChangeEvent<unknown>, page: number) => {
     dispatch(setPage(page));
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -79,14 +86,17 @@ export default function ProductsPage() {
             </Box>
           )}
 
-          {totalPages > 1 && (
+          {products.length > 0 && (
             <Box display="flex" justifyContent="center">
               <Pagination
-                count={totalPages}
+                count={Math.max(totalPages, 1)}
                 page={currentPage}
                 onChange={handlePageChange}
-                color="primary"
+                color="secondary"
+                variant="outlined"
+                shape="rounded"
                 size="large"
+                sx={{ bgcolor: 'background.paper', p: 1, borderRadius: 2, boxShadow: 1 }}
               />
             </Box>
           )}
