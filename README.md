@@ -2,7 +2,10 @@
 
 A modern, full-stack inventory management system built with Next.js 16, Redux Toolkit, Prisma ORM, and Neon PostgreSQL.
 
-![Dashboard Preview](https://github.com/najathi/inventory-dashboard/raw/refs/heads/main/demonstration.mp4)
+## Demo Video
+<video controls width="800">
+  <source src="https://github.com/najathi/inventory-dashboard/raw/refs/heads/main/demonstration.mp4" type="video/mp4">
+</video>
 
 ## 🚀 Features
 
