@@ -12,8 +12,10 @@ import {
   Switch,
   Button,
   Grid,
+  FormHelperText,
 } from '@mui/material';
 import { Product } from '@/types/product';
+import { z } from 'zod';
 
 type ProductFormValues = {
   name: string;
@@ -31,6 +33,32 @@ interface ProductFormProps {
 }
 
 export default function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
+  const categories = ['Electronics', 'Clothing', 'Food', 'Books', 'Home'];
+
+  const productSchema = z.object({
+    name: z.string().min(1, 'Product name is required'),
+    description: z.string().optional().or(z.literal('')),
+    category: z
+      .string()
+      .refine((val) => categories.includes(val as (typeof categories)[number]), 'Select a category'),
+    price: z.number().min(0, 'Price must be at least 0'),
+    stock: z
+      .number()
+      .int('Stock must be a whole number')
+      .min(0, 'Stock cannot be negative'),
+    active: z.boolean(),
+  });
+
+  const makeZodValidator =
+    <T,>(schema: z.ZodType<T>) =>
+    (value: unknown) => {
+      const result = schema.safeParse(value);
+      if (!result.success) {
+        return result.error.issues[0]?.message ?? 'Invalid value';
+      }
+      return undefined;
+    };
+
   const defaultValues: ProductFormValues = {
     name: product?.name || '',
     description: product?.description || '',
@@ -47,8 +75,6 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
     },
   });
 
-  const categories = ['Electronics', 'Clothing', 'Food', 'Books', 'Home'];
-
   return (
     <form
       onSubmit={(e) => {
@@ -59,7 +85,13 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
     >
       <Grid container spacing={3}>
         <Grid size={12}>
-          <form.Field name="name">
+          <form.Field
+            name="name"
+            validators={{
+              onChange: makeZodValidator(productSchema.shape.name),
+              onBlur: makeZodValidator(productSchema.shape.name),
+            }}
+          >
             {(field) => (
               <TextField
                 fullWidth
@@ -68,6 +100,8 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
                 required
+                error={field.state.meta.errors.length > 0}
+                helperText={field.state.meta.errors[0]}
               />
             )}
           </form.Field>
@@ -90,14 +124,21 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <form.Field name="category">
+          <form.Field
+            name="category"
+            validators={{
+              onChange: makeZodValidator(productSchema.shape.category),
+              onBlur: makeZodValidator(productSchema.shape.category),
+            }}
+          >
             {(field) => (
-              <FormControl fullWidth>
+              <FormControl fullWidth error={field.state.meta.errors.length > 0}>
                 <InputLabel>Category</InputLabel>
                 <Select
                   value={field.state.value}
                   label="Category"
                   onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
                 >
                   {categories.map((cat) => (
                     <MenuItem key={cat} value={cat}>
@@ -105,13 +146,22 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
                     </MenuItem>
                   ))}
                 </Select>
+                {field.state.meta.errors[0] && (
+                  <FormHelperText>{field.state.meta.errors[0]}</FormHelperText>
+                )}
               </FormControl>
             )}
           </form.Field>
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <form.Field name="price">
+          <form.Field
+            name="price"
+            validators={{
+              onChange: makeZodValidator(productSchema.shape.price),
+              onBlur: makeZodValidator(productSchema.shape.price),
+            }}
+          >
             {(field) => (
               <TextField
                 fullWidth
@@ -122,13 +172,21 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
                 onBlur={field.handleBlur}
                 inputProps={{ min: 0, step: 0.01 }}
                 required
+                error={field.state.meta.errors.length > 0}
+                helperText={field.state.meta.errors[0]}
               />
             )}
           </form.Field>
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <form.Field name="stock">
+          <form.Field
+            name="stock"
+            validators={{
+              onChange: makeZodValidator(productSchema.shape.stock),
+              onBlur: makeZodValidator(productSchema.shape.stock),
+            }}
+          >
             {(field) => (
               <TextField
                 fullWidth
@@ -139,6 +197,8 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
                 onBlur={field.handleBlur}
                 inputProps={{ min: 0 }}
                 required
+                error={field.state.meta.errors.length > 0}
+                helperText={field.state.meta.errors[0]}
               />
             )}
           </form.Field>
