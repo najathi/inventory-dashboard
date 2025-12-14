@@ -4,9 +4,9 @@ A modern, full-stack inventory management system built with Next.js 16, Redux To
 
 ## Demo Video
 <video controls width="800">
-  <source src="./demonstration.mp4?raw=1" type="video/mp4">
+  <source src="https://raw.githubusercontent.com/najathi/inventory-dashboard/main/demonstration.mp4" type="video/mp4">
   Your browser does not support the video tag. You can
-  <a href="./demonstration.mp4?raw=1">download the video here</a>.
+  <a href="https://raw.githubusercontent.com/najathi/inventory-dashboard/main/demonstration.mp4">download the video here</a>.
 </video>
 
 ## 🚀 Features
