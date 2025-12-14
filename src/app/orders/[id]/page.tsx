@@ -43,6 +43,7 @@ export default function OrderDetailPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [pendingStatus, setPendingStatus] = useState<OrderStatus | null>(null);
+  const [statusUpdating, setStatusUpdating] = useState(false);
 
   const order = useAppSelector(selectSelectedOrder);
   const loading = useAppSelector(selectOrderLoading);
@@ -80,12 +81,15 @@ export default function OrderDetailPage() {
     }
 
     try {
+      setStatusUpdating(true);
       await dispatch(updateOrderStatus({ id: orderId, status })).unwrap();
       toast.success('Order status updated');
       setPendingStatus(null);
     } catch (error) {
       console.error('Failed to update order status', error);
       toast.error('Failed to update order status');
+    } finally {
+      setStatusUpdating(false);
     }
   };
 
@@ -184,7 +188,7 @@ export default function OrderDetailPage() {
                   variant={order.status === action.value ? 'contained' : 'outlined'}
                   color={action.color}
                   onClick={() => setPendingStatus(action.value)}
-                  disabled={loading}
+                  disabled={loading || statusUpdating}
                   fullWidth
                 >
                   {action.label}
@@ -217,6 +221,7 @@ export default function OrderDetailPage() {
             : ''
         }
         confirmText="Update Status"
+        confirmLoading={statusUpdating}
         onConfirm={() => pendingStatus && handleStatusChange(pendingStatus)}
         onCancel={() => setPendingStatus(null)}
       />

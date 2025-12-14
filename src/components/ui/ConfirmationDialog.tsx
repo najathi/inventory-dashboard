@@ -7,6 +7,7 @@ import {
   DialogContentText,
   DialogActions,
   Button,
+  CircularProgress,
 } from '@mui/material';
 
 interface ConfirmationDialogProps {
@@ -17,6 +18,7 @@ interface ConfirmationDialogProps {
   onCancel: () => void;
   confirmText?: string;
   cancelText?: string;
+  confirmLoading?: boolean;
 }
 
 export default function ConfirmationDialog({
@@ -27,6 +29,7 @@ export default function ConfirmationDialog({
   onCancel,
   confirmText = 'Confirm',
   cancelText = 'Cancel',
+  confirmLoading = false,
 }: ConfirmationDialogProps) {
   return (
     <Dialog open={open} onClose={onCancel}>
@@ -36,7 +39,13 @@ export default function ConfirmationDialog({
       </DialogContent>
       <DialogActions>
         <Button onClick={onCancel}>{cancelText}</Button>
-        <Button onClick={onConfirm} variant="contained" autoFocus>
+        <Button
+          onClick={onConfirm}
+          variant="contained"
+          autoFocus
+          disabled={confirmLoading}
+          startIcon={confirmLoading ? <CircularProgress size={18} color="inherit" /> : undefined}
+        >
           {confirmText}
         </Button>
       </DialogActions>
