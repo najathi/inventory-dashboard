@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import {
   Box,
@@ -30,87 +30,93 @@ export default function OrderTable({
     pageSize: 10,
   });
 
-  const columns: GridColDef[] = [
-    {
-      field: 'orderId',
-      headerName: 'Order ID',
-      width: 130,
-      renderCell: (params) => (
-        <Box sx={{ fontWeight: 600 }}>{params.value}</Box>
-      ),
-    },
-    {
-      field: 'customerName',
-      headerName: 'Customer',
-      width: 180,
-    },
-    {
-      field: 'items',
-      headerName: 'Products',
-      width: 200,
-      renderCell: (params) => {
-        const items = params.value as Order['items'];
-        return (
-          <Box>
-            {items.map((item, idx) => (
-              <Box key={item.id} sx={{ fontSize: '0.875rem' }}>
-                {item.product.name} x{item.quantity}
-                {idx < items.length - 1 && ', '}
-              </Box>
-            ))}
-          </Box>
-        );
+  const columns: GridColDef[] = useMemo(
+    () => [
+      {
+        field: 'orderId',
+        headerName: 'Order ID',
+        width: 130,
+        renderCell: (params) => (
+          <Box sx={{ fontWeight: 600 }}>{params.value}</Box>
+        ),
       },
-    },
-    {
-      field: 'total',
-      headerName: 'Total',
-      width: 120,
-      renderCell: (params) => (
-        <Box sx={{ fontWeight: 600 }}>${params.value.toFixed(2)}</Box>
-      ),
-    },
-    {
-      field: 'status',
-      headerName: 'Status',
-      width: 130,
-      renderCell: (params) => <OrderStatusBadge status={params.value} />,
-    },
-    {
-      field: 'createdAt',
-      headerName: 'Date',
-      width: 150,
-      renderCell: (params) =>
-        format(new Date(params.value), 'MMM dd, yyyy'),
-    },
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      width: 140,
-      sortable: false,
-      filterable: false,
-      renderCell: (params) => (
-        <Button
-          variant="outlined"
-          size="small"
-          href={`/orders/${params.row.id}`}
-          sx={{ mb: 4 }}
-        >
-          View
-        </Button>
-      ),
-    },
-  ];
+      {
+        field: 'customerName',
+        headerName: 'Customer',
+        width: 180,
+      },
+      {
+        field: 'items',
+        headerName: 'Products',
+        width: 200,
+        renderCell: (params) => {
+          const items = params.value as Order['items'];
+          return (
+            <Box>
+              {items.map((item, idx) => (
+                <Box key={item.id} sx={{ fontSize: '0.875rem' }}>
+                  {item.product.name} x{item.quantity}
+                  {idx < items.length - 1 && ', '}
+                </Box>
+              ))}
+            </Box>
+          );
+        },
+      },
+      {
+        field: 'total',
+        headerName: 'Total',
+        width: 120,
+        renderCell: (params) => (
+          <Box sx={{ fontWeight: 600 }}>${params.value.toFixed(2)}</Box>
+        ),
+      },
+      {
+        field: 'status',
+        headerName: 'Status',
+        width: 130,
+        renderCell: (params) => <OrderStatusBadge status={params.value} />,
+      },
+      {
+        field: 'createdAt',
+        headerName: 'Date',
+        width: 150,
+        renderCell: (params) =>
+          format(new Date(params.value), 'MMM dd, yyyy'),
+      },
+      {
+        field: 'actions',
+        headerName: 'Actions',
+        width: 140,
+        sortable: false,
+        filterable: false,
+        renderCell: (params) => (
+          <Button
+            variant="outlined"
+            size="small"
+            href={`/orders/${params.row.id}`}
+            sx={{ mb: 4 }}
+          >
+            View
+          </Button>
+        ),
+      },
+    ],
+    []
+  );
 
-  const handleSortChange = (model: GridSortModel) => {
-    if (model.length > 0) {
-      const { field, sort } = model[0];
-      onFiltersChange({
-        sortField: field as OrderFilters['sortField'],
-        sortDirection: sort as 'asc' | 'desc',
-      });
-    }
-  };
+  const handleSortChange = useCallback(
+    (model: GridSortModel) => {
+      if (model.length > 0) {
+        const { field, sort } = model[0];
+        onFiltersChange({
+          sortField: field as OrderFilters['sortField'],
+          sortDirection: sort as 'asc' | 'desc',
+        });
+      }
+    },
+    [onFiltersChange]
+  );
 
   return (
     <Box>

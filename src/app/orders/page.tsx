@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchOrders, setOrderFilters } from '@/features/orders/orderSlice';
 import {
@@ -35,36 +35,42 @@ export default function OrdersPage() {
       .catch(() => toast.error('Failed to load orders'));
   }, [dispatch]);
 
-  const handleFiltersChange = (newFilters: Partial<typeof filters>) => {
-    dispatch(setOrderFilters(newFilters));
-  };
+  const handleFiltersChange = useCallback(
+    (newFilters: Partial<typeof filters>) => {
+      dispatch(setOrderFilters(newFilters));
+    },
+    [dispatch]
+  );
 
-  const statusCards = [
-    {
-      title: 'Pending',
-      value: stats.pending,
-      icon: <PendingActions fontSize="large" />,
-      color: '#f59e0b',
-    },
-    {
-      title: 'Shipped',
-      value: stats.shipped,
-      icon: <LocalShipping fontSize="large" />,
-      color: '#3b82f6',
-    },
-    {
-      title: 'Delivered',
-      value: stats.delivered,
-      icon: <CheckCircle fontSize="large" />,
-      color: '#10b981',
-    },
-    {
-      title: 'Cancelled',
-      value: stats.cancelled,
-      icon: <Cancel fontSize="large" />,
-      color: '#ef4444',
-    },
-  ];
+  const statusCards = useMemo(
+    () => [
+      {
+        title: 'Pending',
+        value: stats.pending,
+        icon: <PendingActions fontSize="large" />,
+        color: '#f59e0b',
+      },
+      {
+        title: 'Shipped',
+        value: stats.shipped,
+        icon: <LocalShipping fontSize="large" />,
+        color: '#3b82f6',
+      },
+      {
+        title: 'Delivered',
+        value: stats.delivered,
+        icon: <CheckCircle fontSize="large" />,
+        color: '#10b981',
+      },
+      {
+        title: 'Cancelled',
+        value: stats.cancelled,
+        icon: <Cancel fontSize="large" />,
+        color: '#ef4444',
+      },
+    ],
+    [stats.cancelled, stats.delivered, stats.pending, stats.shipped]
+  );
 
   return (
     <DashboardLayout>
