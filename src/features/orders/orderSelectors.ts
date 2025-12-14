@@ -5,6 +5,7 @@ export const selectOrders = (state: RootState) => state.orders.items;
 export const selectOrderFilters = (state: RootState) => state.orders.filters;
 export const selectOrderLoading = (state: RootState) => state.orders.loading;
 export const selectOrderError = (state: RootState) => state.orders.error;
+export const selectSelectedOrder = (state: RootState) => state.orders.selectedOrder;
 
 export const selectFilteredAndSortedOrders = createSelector(
   [selectOrders, selectOrderFilters],
