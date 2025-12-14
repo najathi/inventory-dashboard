@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import {
   Box,
+  Button,
   FormControl,
   InputLabel,
   Select,
@@ -81,6 +82,23 @@ export default function OrderTable({
       width: 150,
       renderCell: (params) =>
         format(new Date(params.value), 'MMM dd, yyyy'),
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 140,
+      sortable: false,
+      filterable: false,
+      renderCell: (params) => (
+        <Button
+          variant="outlined"
+          size="small"
+          href={`/orders/${params.row.id}`}
+          sx={{ mb: 4 }}
+        >
+          View
+        </Button>
+      ),
     },
   ];
 

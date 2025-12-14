@@ -22,6 +22,7 @@ export default function OrderStatusBadge({ status }: OrderStatusBadgeProps) {
       label={config.label}
       color={config.color}
       size="small"
+      sx={{ mb: 4 }}
     />
   );
 }
