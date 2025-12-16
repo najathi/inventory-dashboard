@@ -36,9 +36,17 @@ jest.mock('react-hot-toast', () => ({
   error: jest.fn(),
 }));
 
-jest.mock('next/image', () => (props: any) => {
-  const { alt, src, fill, ...rest } = props;
-  return <img alt={alt} src={typeof src === 'string' ? src : ''} {...rest} />;
+jest.mock('next/image', () => {
+  const MockNextImage: React.FC<React.ImgHTMLAttributes<HTMLImageElement> & { src?: unknown }> = (props) => {
+    const { alt, src, ...rest } = props;
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img alt={String(alt ?? '')} src={typeof src === 'string' ? src : ''} {...rest} />;
+  };
+  MockNextImage.displayName = 'MockNextImage';
+  return {
+    __esModule: true,
+    default: MockNextImage,
+  };
 });
 
 jest.mock('@/components/layout/DashboardLayout', () => ({
@@ -57,7 +65,7 @@ jest.mock('@/components/products/ProductForm', () => ({
   __esModule: true,
   default: (props: {
     product: unknown;
-    onSubmit: (data: any) => Promise<void>;
+    onSubmit: (data: unknown) => Promise<void>;
     onCancel?: () => void;
   }) => (
     <div data-testid="product-form">
